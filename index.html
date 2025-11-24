@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder - Create Your Professional Resume</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>📄 Resume Builder</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Form Section -->
+        <section class="form-section">
+            <form id="resumeForm">
+                <!-- Personal Information -->
+                <div class="form-card">
+                    <h2 class="card-title">👤 Personal Information</h2>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" placeholder="City, Country">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedin">LinkedIn</label>
+                            <input type="url" id="linkedin" placeholder="linkedin.com/in/username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="photo">Profile Photo (Optional)</label>
+                        <input type="file" id="photo" accept="image/*">
+                        <small>Upload a square image for best results</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="summary">Professional Summary</label>
+                        <textarea id="summary" placeholder="Brief description about yourself..." rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Education Section -->
+                <div class="form-card">
+                    <h2 class="card-title">🎓 Education</h2>
+                    <div id="educationList"></div>
+                    <button type="button" class="btn-add" id="addEducationBtn">+ Add Education</button>
+                </div>
+
+                <!-- Experience Section -->
+                <div class="form-card">
+                    <h2 class="card-title">💼 Experience</h2>
+                    <div id="experienceList"></div>
+                    <button type="button" class="btn-add" id="addExperienceBtn">+ Add Experience</button>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="form-card">
+                    <h2 class="card-title">⭐ Skills</h2>
+                    <div class="skill-input-group">
+                        <input type="text" id="skillInput" placeholder="e.g., JavaScript, React, UI Design">
+                        <button type="button" class="btn-add" id="addSkillBtn">+ Add Skill</button>
+                    </div>
+                    <div id="skillsList" class="skills-list"></div>
+                </div>
+
+                <!-- Projects Section -->
+                <div class="form-card">
+                    <h2 class="card-title">🚀 Projects</h2>
+                    <div id="projectsList"></div>
+                    <button type="button" class="btn-add" id="addProjectBtn">+ Add Project</button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" id="downloadBtn">📥 Download as PDF</button>
+                    <button type="button" class="btn-secondary" id="clearBtn">🗑️ Clear All</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Resume Preview Section -->
+        <section class="preview-section">
+            <div class="preview-container" id="resumePreview">
+                <!-- This will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Resume Builder. Create stunning resumes effortlessly.</p>
+    </footer>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
