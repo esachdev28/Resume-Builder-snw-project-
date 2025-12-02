@@ -1,483 +1,451 @@
-/* ============================================
-   RESUME BUILDER - JAVASCRIPT
-   ============================================ */
+const nameInput = document.getElementById('nameInput');
+const titleInput = document.getElementById('titleInput');
+const emailInput = document.getElementById('emailInput');
+const phoneInput = document.getElementById('phoneInput');
+const locationInput = document.getElementById('locationInput');
+const summaryInput = document.getElementById('summaryInput');
+const skillsInput = document.getElementById('skillsInput');
+const experienceList = document.getElementById('experience-list');
+const addExperienceBtn = document.getElementById('addExperienceBtn');
+const preview = document.querySelector('.resume-preview-content');
+const paper = document.getElementById('resumePreview');
 
-// Data Structure
-const resumeData = {
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    linkedin: '',
-    summary: '',
-    photo: null,
-    education: [],
-    experience: [],
-    skills: [],
-    projects: []
-};
+const urlParams = new URLSearchParams(window.location.search);
+let currentTheme = urlParams.get('theme') || 'modern';
+const themeSelect = document.getElementById('themeSelect');
 
-// DOM Elements
-const form = document.getElementById('resumeForm');
-const fullNameInput = document.getElementById('fullName');
-const emailInput = document.getElementById('email');
-const phoneInput = document.getElementById('phone');
-const addressInput = document.getElementById('address');
-const linkedinInput = document.getElementById('linkedin');
-const summaryInput = document.getElementById('summary');
-const photoInput = document.getElementById('photo');
-const skillInput = document.getElementById('skillInput');
-const addSkillBtn = document.getElementById('addSkillBtn');
-const skillsList = document.getElementById('skillsList');
-const resumePreview = document.getElementById('resumePreview');
-const themeToggle = document.getElementById('themeToggle');
-const downloadBtn = document.getElementById('downloadBtn');
-const clearBtn = document.getElementById('clearBtn');
-
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-    loadFromLocalStorage();
-    setupEventListeners();
-    updatePreview();
-    checkTheme();
-});
-
-// Event Listeners Setup
-function setupEventListeners() {
-    // Personal Info
-    fullNameInput.addEventListener('input', (e) => {
-        resumeData.fullName = e.target.value;
+if (themeSelect) {
+    themeSelect.value = currentTheme;
+    themeSelect.addEventListener('change', (e) => {
+        currentTheme = e.target.value;
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('theme', currentTheme);
+        window.history.pushState({}, '', newUrl);
         updatePreview();
-        saveToLocalStorage();
     });
-
-    emailInput.addEventListener('input', (e) => {
-        resumeData.email = e.target.value;
-        updatePreview();
-        saveToLocalStorage();
-    });
-
-    phoneInput.addEventListener('input', (e) => {
-        resumeData.phone = e.target.value;
-        updatePreview();
-        saveToLocalStorage();
-    });
-
-    addressInput.addEventListener('input', (e) => {
-        resumeData.address = e.target.value;
-        updatePreview();
-        saveToLocalStorage();
-    });
-
-    linkedinInput.addEventListener('input', (e) => {
-        resumeData.linkedin = e.target.value;
-        updatePreview();
-        saveToLocalStorage();
-    });
-
-    summaryInput.addEventListener('input', (e) => {
-        resumeData.summary = e.target.value;
-        updatePreview();
-        saveToLocalStorage();
-    });
-
-    // Photo Upload
-    photoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                resumeData.photo = event.target.result;
-                updatePreview();
-                saveToLocalStorage();
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Skills
-    addSkillBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        addSkill();
-    });
-
-    skillInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            addSkill();
-        }
-    });
-
-    // Education
-    document.getElementById('addEducationBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        addEducation();
-    });
-
-    // Experience
-    document.getElementById('addExperienceBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        addExperience();
-    });
-
-    // Projects
-    document.getElementById('addProjectBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        addProject();
-    });
-
-    // Theme Toggle
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // Download & Clear
-    downloadBtn.addEventListener('click', downloadPDF);
-    clearBtn.addEventListener('click', clearAll);
 }
 
-// Skill Functions
-function addSkill() {
-    const skillText = skillInput.value.trim();
-    if (skillText && !resumeData.skills.includes(skillText)) {
-        resumeData.skills.push(skillText);
-        skillInput.value = '';
-        updateSkillsList();
-        updatePreview();
-        saveToLocalStorage();
-    }
-}
-
-function removeSkill(index) {
-    resumeData.skills.splice(index, 1);
-    updateSkillsList();
-    updatePreview();
-    saveToLocalStorage();
-}
-
-function updateSkillsList() {
-    skillsList.innerHTML = resumeData.skills.map((skill, index) => `
-        <div class="skill-tag">
-            ${skill}
-            <button type="button" onclick="removeSkill(${index})">✕</button>
+function addExperienceField() {
+    const div = document.createElement('div');
+    div.className = 'experience-entry';
+    div.innerHTML = `
+        <div class="form-group">
+            <input type="text" class="exp-title" placeholder="Job Title (e.g. Senior Developer)">
         </div>
-    `).join('');
-}
-
-// Education Functions
-function addEducation() {
-    const index = resumeData.education.length;
-    resumeData.education.push({
-        degree: '',
-        college: '',
-        year: ''
-    });
-    renderEducation();
-}
-
-function renderEducation() {
-    document.getElementById('educationList').innerHTML = resumeData.education.map((edu, index) => `
-        <div class="entry-group">
-            <button type="button" class="remove-btn" onclick="removeEducation(${index})">Remove</button>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Degree</label>
-                    <input type="text" placeholder="B.Sc. Computer Science" value="${edu.degree}" 
-                           onchange="updateEducation(${index}, 'degree', this.value)">
-                </div>
-                <div class="form-group">
-                    <label>College/University</label>
-                    <input type="text" placeholder="University Name" value="${edu.college}"
-                           onchange="updateEducation(${index}, 'college', this.value)">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Year of Graduation</label>
-                <input type="text" placeholder="2023" value="${edu.year}"
-                       onchange="updateEducation(${index}, 'year', this.value)">
-            </div>
+        <div class="form-group">
+            <input type="text" class="exp-company" placeholder="Company Name">
         </div>
-    `).join('');
-}
-
-function updateEducation(index, field, value) {
-    resumeData.education[index][field] = value;
-    updatePreview();
-    saveToLocalStorage();
-}
-
-function removeEducation(index) {
-    resumeData.education.splice(index, 1);
-    renderEducation();
-    updatePreview();
-    saveToLocalStorage();
-}
-
-// Experience Functions
-function addExperience() {
-    const index = resumeData.experience.length;
-    resumeData.experience.push({
-        company: '',
-        role: '',
-        duration: '',
-        description: ''
-    });
-    renderExperience();
-}
-
-function renderExperience() {
-    document.getElementById('experienceList').innerHTML = resumeData.experience.map((exp, index) => `
-        <div class="entry-group">
-            <button type="button" class="remove-btn" onclick="removeExperience(${index})">Remove</button>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" placeholder="Company Name" value="${exp.company}"
-                           onchange="updateExperience(${index}, 'company', this.value)">
-                </div>
-                <div class="form-group">
-                    <label>Role</label>
-                    <input type="text" placeholder="Job Title" value="${exp.role}"
-                           onchange="updateExperience(${index}, 'role', this.value)">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" placeholder="Jan 2022 - Present" value="${exp.duration}"
-                       onchange="updateExperience(${index}, 'duration', this.value)">
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea placeholder="Describe your responsibilities and achievements..." rows="2"
-                          onchange="updateExperience(${index}, 'description', this.value)">${exp.description}</textarea>
-            </div>
+        <div class="form-group">
+            <input type="text" class="exp-date" placeholder="Date (e.g. 2020 - Present)">
         </div>
-    `).join('');
-}
-
-function updateExperience(index, field, value) {
-    resumeData.experience[index][field] = value;
-    updatePreview();
-    saveToLocalStorage();
-}
-
-function removeExperience(index) {
-    resumeData.experience.splice(index, 1);
-    renderExperience();
-    updatePreview();
-    saveToLocalStorage();
-}
-
-// Projects Functions
-function addProject() {
-    const index = resumeData.projects.length;
-    resumeData.projects.push({
-        title: '',
-        description: ''
-    });
-    renderProjects();
-}
-
-function renderProjects() {
-    document.getElementById('projectsList').innerHTML = resumeData.projects.map((proj, index) => `
-        <div class="entry-group">
-            <button type="button" class="remove-btn" onclick="removeProject(${index})">Remove</button>
-            <div class="form-group">
-                <label>Project Title</label>
-                <input type="text" placeholder="Project Name" value="${proj.title}"
-                       onchange="updateProject(${index}, 'title', this.value)">
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea placeholder="Project description and your contribution..." rows="2"
-                          onchange="updateProject(${index}, 'description', this.value)">${proj.description}</textarea>
-            </div>
+        <div class="form-group">
+            <textarea class="exp-desc" rows="3" placeholder="Job Description..."></textarea>
         </div>
-    `).join('');
+        <button class="btn-remove" onclick="this.parentElement.remove(); updatePreview()">Remove</button>
+    `;
+    experienceList.appendChild(div);
+
+    // Add event listeners to new inputs
+    div.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
 }
 
-function updateProject(index, field, value) {
-    resumeData.projects[index][field] = value;
-    updatePreview();
-    saveToLocalStorage();
-}
-
-function removeProject(index) {
-    resumeData.projects.splice(index, 1);
-    renderProjects();
-    updatePreview();
-    saveToLocalStorage();
-}
-
-// Update Preview
 function updatePreview() {
-    let html = `<div class="resume-header">`;
-
-    if (resumeData.photo) {
-        html += `<img src="${resumeData.photo}" alt="Profile" class="resume-photo">`;
-    }
-
-    html += `
-        <h1 class="resume-name">${resumeData.fullName || 'Your Name'}</h1>
-        <div class="resume-contact">
-            ${resumeData.email ? `<span>📧 ${resumeData.email}</span>` : ''}
-            ${resumeData.phone ? `<span>📱 ${resumeData.phone}</span>` : ''}
-            ${resumeData.address ? `<span>📍 ${resumeData.address}</span>` : ''}
-            ${resumeData.linkedin ? `<span>🔗 ${resumeData.linkedin}</span>` : ''}
-        </div>
-    </div>`;
-
-    if (resumeData.summary) {
-        html += `<div class="resume-summary">${resumeData.summary}</div>`;
-    }
-
-    // Education Section
-    if (resumeData.education.some(e => e.degree || e.college)) {
-        html += `<div class="resume-section">
-            <h2 class="resume-section-title">🎓 Education</h2>`;
-        resumeData.education.forEach(edu => {
-            if (edu.degree || edu.college) {
-                html += `
-                    <div class="resume-entry">
-                        <div class="entry-header">
-                            <span class="entry-title">${edu.degree || 'Degree'}</span>
-                            <span class="entry-date">${edu.year || ''}</span>
-                        </div>
-                        <div class="entry-subtitle">${edu.college || 'College/University'}</div>
-                    </div>`;
-            }
+    const experienceEntries = [];
+    document.querySelectorAll('.experience-entry').forEach(entry => {
+        experienceEntries.push({
+            title: entry.querySelector('.exp-title').value || 'Job Title',
+            company: entry.querySelector('.exp-company').value || 'Company Name',
+            date: entry.querySelector('.exp-date').value || 'Date',
+            description: entry.querySelector('.exp-desc').value || 'Description of your role and achievements...'
         });
-        html += `</div>`;
-    }
+    });
 
-    // Experience Section
-    if (resumeData.experience.some(e => e.company || e.role)) {
-        html += `<div class="resume-section">
-            <h2 class="resume-section-title">💼 Experience</h2>`;
-        resumeData.experience.forEach(exp => {
-            if (exp.company || exp.role) {
-                html += `
-                    <div class="resume-entry">
-                        <div class="entry-header">
-                            <span class="entry-title">${exp.role || 'Position'}</span>
-                            <span class="entry-date">${exp.duration || ''}</span>
-                        </div>
-                        <div class="entry-subtitle">${exp.company || 'Company'}</div>
-                        ${exp.description ? `<div class="entry-description">${exp.description}</div>` : ''}
-                    </div>`;
-            }
+    // If no experience, add a placeholder
+    if (experienceEntries.length === 0) {
+        experienceEntries.push({
+            title: 'Job Title',
+            company: 'Company Name',
+            date: '2020 - Present',
+            description: 'Description of your role and achievements...'
         });
-        html += `</div>`;
     }
 
-    // Skills Section
-    if (resumeData.skills.length > 0) {
-        html += `<div class="resume-section">
-            <h2 class="resume-section-title">⭐ Skills</h2>
-            <div class="skills-section">
-                ${resumeData.skills.map(skill => `<div class="resume-skill">${skill}</div>`).join('')}
-            </div>
-        </div>`;
-    }
-
-    // Projects Section
-    if (resumeData.projects.some(p => p.title || p.description)) {
-        html += `<div class="resume-section">
-            <h2 class="resume-section-title">🚀 Projects</h2>`;
-        resumeData.projects.forEach(proj => {
-            if (proj.title || proj.description) {
-                html += `
-                    <div class="resume-entry">
-                        <div class="entry-title">${proj.title || 'Project'}</div>
-                        ${proj.description ? `<div class="entry-description">${proj.description}</div>` : ''}
-                    </div>`;
-            }
-        });
-        html += `</div>`;
-    }
-
-    resumePreview.innerHTML = html;
-}
-
-// Local Storage
-function saveToLocalStorage() {
-    localStorage.setItem('resumeData', JSON.stringify(resumeData));
-}
-
-function loadFromLocalStorage() {
-    const saved = localStorage.getItem('resumeData');
-    if (saved) {
-        Object.assign(resumeData, JSON.parse(saved));
-        fullNameInput.value = resumeData.fullName;
-        emailInput.value = resumeData.email;
-        phoneInput.value = resumeData.phone;
-        addressInput.value = resumeData.address;
-        linkedinInput.value = resumeData.linkedin;
-        summaryInput.value = resumeData.summary;
-        updateSkillsList();
-        renderEducation();
-        renderExperience();
-        renderProjects();
-    }
-}
-
-// Dark Mode
-function toggleTheme() {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    updateThemeIcon();
-}
-
-function checkTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    }
-    updateThemeIcon();
-}
-
-function updateThemeIcon() {
-    const isDark = document.documentElement.classList.contains('dark');
-    themeToggle.innerHTML = `<span class="theme-icon">${isDark ? '☀️' : '🌙'}</span>`;
-}
-
-// Download PDF
-function downloadPDF() {
-    const element = resumePreview;
-    const opt = {
-        margin: 10,
-        filename: `${resumeData.fullName || 'resume'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+    const data = {
+        name: nameInput.value || 'Your Name',
+        title: titleInput.value || 'Job Title',
+        email: emailInput.value || 'email@example.com',
+        phone: phoneInput.value || '123-456-7890',
+        location: locationInput.value || 'City, Country',
+        summary: summaryInput.value || 'Professional summary goes here...',
+        experience: experienceEntries,
+        skills: skillsInput.value || 'Skill 1, Skill 2, Skill 3'
     };
 
-    // Fallback to print dialog if html2pdf not available
-    window.print();
+    renderTheme(data);
 }
 
-// Clear All
-function clearAll() {
-    if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-        Object.assign(resumeData, {
-            fullName: '',
-            email: '',
-            phone: '',
-            address: '',
-            linkedin: '',
-            summary: '',
-            photo: null,
-            education: [],
-            experience: [],
-            skills: [],
-            projects: []
-        });
+function renderTheme(data) {
+    let html = '';
 
-        form.reset();
-        updateSkillsList();
-        renderEducation();
-        renderExperience();
-        renderProjects();
-        updatePreview();
-        localStorage.removeItem('resumeData');
-        alert('All data cleared successfully!');
+    // Reset basic styles
+    paper.style.background = '#ffffff';
+    paper.style.color = '#000000';
+    paper.style.fontFamily = "'Inter', sans-serif";
+
+    // Helper to generate experience HTML based on theme
+    const renderExp = (item, styleType) => {
+        switch (styleType) {
+            case 'modern':
+                return `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <strong style="color: #1f2937;">${item.title}</strong>
+                            <span style="color: #6b7280; font-size: 0.9em;">${item.date}</span>
+                        </div>
+                        <div style="color: #2563eb; font-weight: 500; margin-bottom: 5px;">${item.company}</div>
+                        <p style="color: #374151; white-space: pre-line; line-height: 1.5;">${item.description}</p>
+                    </div>`;
+            case 'minimal':
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-weight: 600; color: #111827;">${item.title}</span>
+                            <span style="color: #9ca3af;"> | </span>
+                            <span style="color: #4b5563;">${item.company}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">${item.date}</div>
+                        <p style="color: #374151; white-space: pre-line; line-height: 1.6;">${item.description}</p>
+                    </div>`;
+            case 'creative':
+                return `
+                    <div style="margin-bottom: 20px; position: relative; padding-left: 20px; border-left: 2px solid #e5e7eb;">
+                        <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #2563eb; border-radius: 50%;"></div>
+                        <h4 style="color: #1f2937; font-weight: 700; margin-bottom: 2px;">${item.title}</h4>
+                        <div style="color: #2563eb; font-size: 14px; margin-bottom: 5px;">${item.company}</div>
+                        <div style="color: #9ca3af; font-size: 12px; margin-bottom: 8px;">${item.date}</div>
+                        <p style="color: #4b5563; white-space: pre-line; line-height: 1.5;">${item.description}</p>
+                    </div>`;
+            case 'professional':
+                return `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; margin-bottom: 10px;">
+                            <div>
+                                <span style="font-weight: 700; color: #1f2937; font-size: 1.1em;">${item.title}</span>
+                                <span style="color: #6b7280; margin: 0 5px;">at</span>
+                                <span style="font-weight: 600; color: #374151;">${item.company}</span>
+                            </div>
+                            <span style="font-weight: 600; color: #1f2937; font-size: 0.9em;">${item.date}</span>
+                        </div>
+                        <p style="color: #374151; white-space: pre-line; line-height: 1.6; text-align: justify;">${item.description}</p>
+                    </div>`;
+            case 'executive':
+                return `
+                    <div style="margin-bottom: 25px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span style="font-family: serif; font-weight: 700; font-size: 1.1em; color: #111827;">${item.company}</span>
+                            <span style="color: #4b5563; font-style: italic;">${item.date}</span>
+                        </div>
+                        <div style="font-weight: 600; color: #374151; margin-bottom: 10px;">${item.title}</div>
+                        <p style="color: #4b5563; white-space: pre-line; line-height: 1.8;">${item.description}</p>
+                    </div>`;
+            case 'compact':
+                return `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                            <strong style="color: #059669;">${item.title}</strong>
+                            <span style="font-size: 0.85em; color: #6b7280;">${item.date}</span>
+                        </div>
+                        <div style="font-size: 0.9em; font-weight: 600; color: #374151; margin-bottom: 5px;">${item.company}</div>
+                        <p style="font-size: 0.9em; color: #374151; white-space: pre-line; line-height: 1.4;">${item.description}</p>
+                    </div>`;
+            case 'bold':
+                return `
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="font-weight: 900; color: #111827; font-size: 1.1em; margin-bottom: 2px;">${item.title.toUpperCase()}</h4>
+                        <div style="color: #4b5563; font-weight: 600; margin-bottom: 5px;">${item.company} | ${item.date}</div>
+                        <p style="color: #374151; white-space: pre-line; line-height: 1.6;">${item.description}</p>
+                    </div>`;
+            case 'tech':
+                return `
+                    <div style="margin-bottom: 20px; padding-left: 15px; border-left: 1px dashed #d1d5db;">
+                        <div style="color: #2563eb; font-weight: bold; margin-bottom: 2px;">{</div>
+                        <div style="padding-left: 20px;">
+                            <div style="color: #4b5563;">role: "<span style="color: #059669;">${item.title}</span>",</div>
+                            <div style="color: #4b5563;">company: "<span style="color: #059669;">${item.company}</span>",</div>
+                            <div style="color: #4b5563;">period: "<span style="color: #059669;">${item.date}</span>",</div>
+                            <div style="color: #4b5563;">desc: \`<span style="color: #374151;">${item.description}</span>\`</div>
+                        </div>
+                        <div style="color: #2563eb; font-weight: bold; margin-top: 2px;">},</div>
+                    </div>`;
+            default:
+                return '';
+        }
+    };
+
+    const experienceHtml = data.experience.map(item => renderExp(item, currentTheme)).join('');
+
+    switch (currentTheme) {
+        case 'modern':
+            html = `
+                <div style="border-left: 5px solid #2563eb; padding-left: 20px; margin-bottom: 30px;">
+                    <h1 style="font-size: 36px; color: #1f2937; margin-bottom: 5px; font-weight: 800;">${data.name}</h1>
+                    <h2 style="font-size: 18px; color: #2563eb; font-weight: 600;">${data.title}</h2>
+                </div>
+                <div style="display: flex; gap: 20px; margin-bottom: 30px; font-size: 14px; color: #4b5563; border-bottom: 1px solid #e5e7eb; padding-bottom: 20px;">
+                    <span>${data.email}</span>
+                    <span>•</span>
+                    <span>${data.phone}</span>
+                    <span>•</span>
+                    <span>${data.location}</span>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Profile</h3>
+                    <p style="color: #374151; line-height: 1.6;">${data.summary}</p>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Experience</h3>
+                    ${experienceHtml}
+                </div>
+                <div>
+                    <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Skills</h3>
+                    <p style="color: #374151; line-height: 1.6;">${data.skills}</p>
+                </div>
+            `;
+            break;
+
+        case 'minimal':
+            html = `
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h1 style="font-size: 32px; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px;">${data.name.toUpperCase()}</h1>
+                    <p style="font-size: 14px; color: #6b7280; letter-spacing: 1px;">${data.title.toUpperCase()}</p>
+                    <div style="margin-top: 15px; font-size: 12px; color: #6b7280;">
+                        ${data.email} &nbsp;|&nbsp; ${data.phone} &nbsp;|&nbsp; ${data.location}
+                    </div>
+                </div>
+                <div style="margin-bottom: 30px; padding: 0 20px;">
+                    <p style="text-align: center; color: #4b5563; font-style: italic;">${data.summary}</p>
+                </div>
+                <div style="border-top: 1px solid #e5e7eb; padding-top: 30px;">
+                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 20px; margin-bottom: 20px;">
+                        <h3 style="font-size: 14px; font-weight: 600; color: #111827;">EXPERIENCE</h3>
+                        <div>${experienceHtml}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 20px;">
+                        <h3 style="font-size: 14px; font-weight: 600; color: #111827;">SKILLS</h3>
+                        <p style="font-size: 14px; color: #374151; line-height: 1.6;">${data.skills}</p>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'creative':
+            paper.style.background = '#f8fafc';
+            html = `
+                <div style="background: #2563eb; color: white; padding: 40px; margin: -40px -40px 30px -40px;">
+                    <h1 style="font-size: 42px; margin-bottom: 5px;">${data.name}</h1>
+                    <p style="font-size: 18px; opacity: 0.9;">${data.title}</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px;">
+                    <div>
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: #2563eb; border-bottom: 2px solid #bfdbfe; padding-bottom: 5px; margin-bottom: 15px;">CONTACT</h3>
+                            <div style="font-size: 14px; color: #4b5563; line-height: 2;">
+                                <div>${data.email}</div>
+                                <div>${data.phone}</div>
+                                <div>${data.location}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="color: #2563eb; border-bottom: 2px solid #bfdbfe; padding-bottom: 5px; margin-bottom: 15px;">SKILLS</h3>
+                            <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">${data.skills}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: #2563eb; border-bottom: 2px solid #bfdbfe; padding-bottom: 5px; margin-bottom: 15px;">PROFILE</h3>
+                            <p style="color: #374151; line-height: 1.6;">${data.summary}</p>
+                        </div>
+                        <div>
+                            <h3 style="color: #2563eb; border-bottom: 2px solid #bfdbfe; padding-bottom: 5px; margin-bottom: 15px;">EXPERIENCE</h3>
+                            <div>${experienceHtml}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'professional':
+            html = `
+                <div style="border-bottom: 4px solid #1f2937; padding-bottom: 20px; margin-bottom: 30px;">
+                    <h1 style="font-size: 40px; color: #1f2937; font-weight: 700;">${data.name}</h1>
+                    <p style="font-size: 20px; color: #4b5563;">${data.title}</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background: #f3f4f6; padding: 15px; border-radius: 4px;">
+                    <span>${data.email}</span>
+                    <span>${data.phone}</span>
+                    <span>${data.location}</span>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="background: #1f2937; color: white; padding: 5px 10px; display: inline-block; margin-bottom: 15px; font-size: 14px; font-weight: 600;">PROFESSIONAL SUMMARY</h3>
+                    <p style="color: #374151; line-height: 1.6;">${data.summary}</p>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="background: #1f2937; color: white; padding: 5px 10px; display: inline-block; margin-bottom: 15px; font-size: 14px; font-weight: 600;">WORK HISTORY</h3>
+                    <div>${experienceHtml}</div>
+                </div>
+                <div>
+                    <h3 style="background: #1f2937; color: white; padding: 5px 10px; display: inline-block; margin-bottom: 15px; font-size: 14px; font-weight: 600;">CORE COMPETENCIES</h3>
+                    <p style="color: #374151; line-height: 1.6;">${data.skills}</p>
+                </div>
+            `;
+            break;
+
+        case 'executive':
+            html = `
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h1 style="font-family: serif; font-size: 42px; color: #111827; margin-bottom: 10px;">${data.name}</h1>
+                    <p style="font-size: 16px; color: #6b7280; text-transform: uppercase; letter-spacing: 2px;">${data.title}</p>
+                    <div style="margin-top: 20px; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 10px 0; color: #4b5563; font-size: 14px;">
+                        ${data.email} • ${data.phone} • ${data.location}
+                    </div>
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-family: serif; font-size: 18px; color: #111827; border-bottom: 1px solid #111827; padding-bottom: 5px; margin-bottom: 15px;">Executive Profile</h3>
+                    <p style="color: #374151; line-height: 1.8;">${data.summary}</p>
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-family: serif; font-size: 18px; color: #111827; border-bottom: 1px solid #111827; padding-bottom: 5px; margin-bottom: 15px;">Professional Experience</h3>
+                    <div>${experienceHtml}</div>
+                </div>
+                <div>
+                    <h3 style="font-family: serif; font-size: 18px; color: #111827; border-bottom: 1px solid #111827; padding-bottom: 5px; margin-bottom: 15px;">Areas of Expertise</h3>
+                    <p style="color: #374151; line-height: 1.8;">${data.skills}</p>
+                </div>
+            `;
+            break;
+
+        case 'compact':
+            html = `
+                <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #059669; padding-bottom: 10px; margin-bottom: 20px;">
+                    <div>
+                        <h1 style="font-size: 28px; color: #059669; font-weight: 700; margin: 0;">${data.name}</h1>
+                        <p style="font-size: 16px; color: #374151; margin: 0;">${data.title}</p>
+                    </div>
+                    <div style="text-align: right; font-size: 12px; color: #6b7280;">
+                        <div>${data.email}</div>
+                        <div>${data.phone}</div>
+                        <div>${data.location}</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+                    <div>
+                        <h3 style="color: #059669; font-size: 14px; font-weight: 700; margin-bottom: 10px;">EXPERIENCE</h3>
+                        <div>${experienceHtml}</div>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #059669; font-size: 14px; font-weight: 700; margin-bottom: 10px;">SUMMARY</h3>
+                            <p style="font-size: 13px; color: #374151; line-height: 1.5;">${data.summary}</p>
+                        </div>
+                        <div>
+                            <h3 style="color: #059669; font-size: 14px; font-weight: 700; margin-bottom: 10px;">SKILLS</h3>
+                            <p style="font-size: 13px; color: #374151; line-height: 1.5;">${data.skills}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'bold':
+            html = `
+                <div style="background: #111827; color: white; padding: 30px; margin: -40px -40px 30px -40px;">
+                    <h1 style="font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 10px;">${data.name}</h1>
+                    <p style="font-size: 20px; color: #9ca3af;">${data.title}</p>
+                </div>
+                <div style="display: flex; gap: 40px;">
+                    <div style="width: 30%;">
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="font-weight: 900; font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">CONTACT</h3>
+                            <div style="font-size: 14px; color: #4b5563; line-height: 2;">
+                                <div>${data.email}</div>
+                                <div>${data.phone}</div>
+                                <div>${data.location}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 900; font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">SKILLS</h3>
+                            <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">${data.skills}</p>
+                        </div>
+                    </div>
+                    <div style="width: 70%;">
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="font-weight: 900; font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">PROFILE</h3>
+                            <p style="color: #374151; line-height: 1.6;">${data.summary}</p>
+                        </div>
+                        <div>
+                            <h3 style="font-weight: 900; font-size: 14px; margin-bottom: 15px; letter-spacing: 1px;">EXPERIENCE</h3>
+                            <div>${experienceHtml}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+
+        case 'tech':
+            paper.style.fontFamily = "'Courier New', Courier, monospace";
+            html = `
+                <div style="border-bottom: 1px dashed #333; padding-bottom: 20px; margin-bottom: 20px;">
+                    <h1 style="font-size: 32px; color: #2563eb;">> ${data.name}</h1>
+                    <p style="font-size: 16px; color: #4b5563;">// ${data.title}</p>
+                </div>
+                <div style="margin-bottom: 20px; font-size: 14px; color: #6b7280;">
+                    const contact = {
+                        email: "${data.email}",
+                        phone: "${data.phone}",
+                        location: "${data.location}"
+                    };
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #2563eb; font-size: 18px; margin-bottom: 10px;">function getSummary() {</h3>
+                    <div style="padding-left: 20px; border-left: 2px solid #e5e7eb;">
+                        <p style="color: #374151; line-height: 1.6;">return "${data.summary}";</p>
+                    </div>
+                    <h3 style="color: #2563eb; font-size: 18px; margin-top: 10px;">}</h3>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <h3 style="color: #2563eb; font-size: 18px; margin-bottom: 10px;">function getExperience() {</h3>
+                    <div style="padding-left: 20px; border-left: 2px solid #e5e7eb;">
+                        <div>${experienceHtml}</div>
+                    </div>
+                    <h3 style="color: #2563eb; font-size: 18px; margin-top: 10px;">}</h3>
+                </div>
+                <div>
+                    <h3 style="color: #2563eb; font-size: 18px; margin-bottom: 10px;">const skills = [</h3>
+                    <div style="padding-left: 20px;">
+                        <p style="color: #374151; line-height: 1.6;">"${data.skills}"</p>
+                    </div>
+                    <h3 style="color: #2563eb; font-size: 18px; margin-top: 10px;">];</h3>
+                </div>
+            `;
+            break;
     }
+
+    preview.innerHTML = html;
+}
+
+[nameInput, titleInput, emailInput, phoneInput, locationInput, summaryInput, skillsInput].forEach(input => {
+    if (input) input.addEventListener('input', updatePreview);
+});
+
+if (addExperienceBtn) {
+    addExperienceBtn.addEventListener('click', addExperienceField);
+}
+
+// Add one initial experience field
+addExperienceField();
+
+function downloadPDF() {
+    window.print();
 }

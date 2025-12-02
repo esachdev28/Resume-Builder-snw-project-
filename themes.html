@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Theme - Rezume</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Rezume</a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="container" style="padding-top: 100px;">
+        <h1 style="text-align: center; margin-bottom: 1rem; color: #111827; font-size: 2.5rem; font-weight: 800;">Choose
+            Your Template</h1>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; font-size: 1.1rem;">Select a
+            professional design to start building your resume.</p>
+
+        <div class="themes-grid">
+            <!-- 1. Modern -->
+            <div class="theme-card" onclick="selectTheme('modern')">
+                <div class="theme-preview">
+                    <div style="padding: 20px; height: 100%; display: flex; flex-direction: column;">
+                        <div style="border-left: 4px solid #2563eb; padding-left: 10px; margin-bottom: 15px;">
+                            <div style="height: 12px; width: 60%; background: #1f2937; margin-bottom: 5px;"></div>
+                            <div style="height: 8px; width: 40%; background: #2563eb;"></div>
+                        </div>
+                        <div style="flex: 1; background: #e5e7eb; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Modern</h3>
+                    <p>Clean and professional with blue accents.</p>
+                </div>
+            </div>
+
+            <!-- 2. Minimal -->
+            <div class="theme-card" onclick="selectTheme('minimal')">
+                <div class="theme-preview" style="background: white; border-bottom: 1px solid #e5e7eb;">
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="height: 12px; width: 50%; background: #111827; margin: 0 auto 10px;"></div>
+                        <div style="height: 8px; width: 30%; background: #6b7280; margin: 0 auto 20px;"></div>
+                        <div style="height: 100px; background: #f3f4f6; margin-bottom: 10px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Minimalist</h3>
+                    <p>Simple, centered, and elegant.</p>
+                </div>
+            </div>
+
+            <!-- 3. Creative -->
+            <div class="theme-card" onclick="selectTheme('creative')">
+                <div class="theme-preview">
+                    <div style="height: 80px; background: #2563eb; margin-bottom: 10px;"></div>
+                    <div style="display: flex; gap: 10px; padding: 0 10px;">
+                        <div style="width: 30%; background: #dbeafe; height: 150px;"></div>
+                        <div style="width: 70%; background: #e5e7eb; height: 150px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Creative</h3>
+                    <p>Two-column layout with a bold header.</p>
+                </div>
+            </div>
+
+            <!-- 4. Professional -->
+            <div class="theme-card" onclick="selectTheme('professional')">
+                <div class="theme-preview">
+                    <div style="padding: 20px;">
+                        <div style="border-bottom: 3px solid #1f2937; margin-bottom: 15px; padding-bottom: 10px;">
+                            <div style="height: 14px; width: 70%; background: #1f2937;"></div>
+                        </div>
+                        <div style="background: #1f2937; width: 100px; height: 15px; margin-bottom: 10px;"></div>
+                        <div style="background: #e5e7eb; height: 80px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Professional</h3>
+                    <p>Strong headers and clear hierarchy.</p>
+                </div>
+            </div>
+
+            <!-- 5. Executive -->
+            <div class="theme-card" onclick="selectTheme('executive')">
+                <div class="theme-preview">
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="height: 16px; width: 60%; background: #111827; margin: 0 auto 5px;"></div>
+                        <div
+                            style="border-top: 1px solid #9ca3af; border-bottom: 1px solid #9ca3af; height: 10px; margin: 10px 0;">
+                        </div>
+                        <div style="background: #f3f4f6; height: 100px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Executive</h3>
+                    <p>Serif fonts for a distinguished look.</p>
+                </div>
+            </div>
+
+            <!-- 6. Compact -->
+            <div class="theme-card" onclick="selectTheme('compact')">
+                <div class="theme-preview">
+                    <div style="padding: 20px;">
+                        <div style="border-bottom: 2px solid #059669; margin-bottom: 15px;">
+                            <div style="height: 12px; width: 50%; background: #059669;"></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                            <div style="background: #e5e7eb; height: 120px;"></div>
+                            <div style="background: #d1fae5; height: 120px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Compact</h3>
+                    <p>Efficient use of space with green accents.</p>
+                </div>
+            </div>
+
+            <!-- 7. Bold -->
+            <div class="theme-card" onclick="selectTheme('bold')">
+                <div class="theme-preview">
+                    <div style="background: #111827; height: 80px; margin-bottom: 10px;"></div>
+                    <div style="display: flex; gap: 10px; padding: 0 10px;">
+                        <div style="width: 30%; background: #e5e7eb; height: 150px;"></div>
+                        <div style="width: 70%; background: #f3f4f6; height: 150px;"></div>
+                    </div>
+                </div>
+                <div class="theme-info">
+                    <h3>Bold</h3>
+                    <p>High contrast dark header design.</p>
+                </div>
+            </div>
+
+            <!-- 8. Tech -->
+            <div class="theme-card" onclick="selectTheme('tech')">
+                <div class="theme-preview" style="font-family: monospace; padding: 20px;">
+                    <div style="border-bottom: 1px dashed #333; margin-bottom: 10px;">
+                        <div style="height: 10px; width: 60%; background: #2563eb;"></div>
+                    </div>
+                    <div style="background: #e5e7eb; height: 120px; border-left: 2px solid #d1d5db;"></div>
+                </div>
+                <div class="theme-info">
+                    <h3>Tech</h3>
+                    <p>Monospace font for developers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function selectTheme(theme) {
+            window.location.href = `builder.html?theme=${theme}`;
+        }
+    </script>
+</body>
+
+</html>

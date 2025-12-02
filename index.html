@@ -1,120 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder - Create Your Professional Resume</title>
+    <title>Rezume - Build Your Future</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo">
-                <h1>📄 Resume Builder</h1>
-            </div>
-            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
-                <span class="theme-icon">🌙</span>
-            </button>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo"><img src="logo.png" alt="Rezume Logo" width="150" height="60"></a>
+                <div class="nav-links">
+                    <a href="themes.html">Themes</a>
+                    <a href="#features">Features</a>
+                </div>
+                <a href="themes.html" class="btn-primary">Create Resume</a>
+            </nav>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Form Section -->
-        <section class="form-section">
-            <form id="resumeForm">
-                <!-- Personal Information -->
-                <div class="form-card">
-                    <h2 class="card-title">👤 Personal Information</h2>
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" placeholder="John Doe" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" placeholder="john@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="tel" id="phone" placeholder="+1 (555) 123-4567">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <input type="text" id="address" placeholder="City, Country">
-                        </div>
-                        <div class="form-group">
-                            <label for="linkedin">LinkedIn</label>
-                            <input type="url" id="linkedin" placeholder="linkedin.com/in/username">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="photo">Profile Photo (Optional)</label>
-                        <input type="file" id="photo" accept="image/*">
-                        <small>Upload a square image for best results</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="summary">Professional Summary</label>
-                        <textarea id="summary" placeholder="Brief description about yourself..." rows="3"></textarea>
-                    </div>
-                </div>
+    <section class="hero">
+        <div class="container">
+            <h1>Craft Your Professional<br>Identity Instantly</h1>
+            <p>Stand out with premium, ATS-friendly resume templates designed to get you hired at top companies.</p>
+            <a href="themes.html" class="btn-primary">Start Building Now</a>
+        </div>
+    </section>
 
-                <!-- Education Section -->
-                <div class="form-card">
-                    <h2 class="card-title">🎓 Education</h2>
-                    <div id="educationList"></div>
-                    <button type="button" class="btn-add" id="addEducationBtn">+ Add Education</button>
+    <section id="features" class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Professional Designs</h3>
+                    <p>Choose from 8 curated templates tailored for every industry.</p>
                 </div>
-
-                <!-- Experience Section -->
-                <div class="form-card">
-                    <h2 class="card-title">💼 Experience</h2>
-                    <div id="experienceList"></div>
-                    <button type="button" class="btn-add" id="addExperienceBtn">+ Add Experience</button>
+                <div class="feature-card">
+                    <h3>Real-time Preview</h3>
+                    <p>See changes instantly as you type with our split-screen editor.</p>
                 </div>
-
-                <!-- Skills Section -->
-                <div class="form-card">
-                    <h2 class="card-title">⭐ Skills</h2>
-                    <div class="skill-input-group">
-                        <input type="text" id="skillInput" placeholder="e.g., JavaScript, React, UI Design">
-                        <button type="button" class="btn-add" id="addSkillBtn">+ Add Skill</button>
-                    </div>
-                    <div id="skillsList" class="skills-list"></div>
+                <div class="feature-card">
+                    <h3>ATS Friendly</h3>
+                    <p>Optimized layouts that pass Applicant Tracking Systems with ease.</p>
                 </div>
-
-                <!-- Projects Section -->
-                <div class="form-card">
-                    <h2 class="card-title">🚀 Projects</h2>
-                    <div id="projectsList"></div>
-                    <button type="button" class="btn-add" id="addProjectBtn">+ Add Project</button>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="form-actions">
-                    <button type="button" class="btn-primary" id="downloadBtn">📥 Download as PDF</button>
-                    <button type="button" class="btn-secondary" id="clearBtn">🗑️ Clear All</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Resume Preview Section -->
-        <section class="preview-section">
-            <div class="preview-container" id="resumePreview">
-                <!-- This will be populated by JavaScript -->
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Resume Builder. Create stunning resumes effortlessly.</p>
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-heading">How It Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Choose a Template</h3>
+                    <p>Select from our range of professional, ATS-friendly designs.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Enter Your Info</h3>
+                    <p>Fill in your details and watch your resume build in real-time.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Download PDF</h3>
+                    <p>Get your polished resume instantly and start applying.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="container">
+            <h2 class="section-heading">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Is Rezume free to use?</h3>
+                    <p>Yes, Rezume is completely free. You can create and download your resume without any hidden costs.
+                    </p>
+                </div>
+                <div class="faq-item">
+                    <h3>Are the templates ATS-friendly?</h3>
+                    <p>Absolutely. Our templates are designed to be easily readable by Applicant Tracking Systems.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I download my resume as a PDF?</h3>
+                    <p>Yes, you can download your finished resume as a high-quality PDF document instantly.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Do I need to create an account?</h3>
+                    <p>No account is required. You can start building your resume immediately.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Rezume. All rights reserved.</p>
     </footer>
-
-    <!-- Script -->
-    <script src="script.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Builder - Rezume</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo"><img src="logo.png" alt="Rezume Logo" width="150" height="60"></a>
+                <div class="nav-links">
+                    <button onclick="downloadPDF()" class="btn-primary">Download PDF</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="builder-container">
+        <div class="editor-panel">
+
+
+            <div class="section-title">Theme Selection</div>
+            <div class="form-group">
+                <select id="themeSelect">
+                    <option value="modern">Modern</option>
+                    <option value="professional">Professional</option>
+                    <option value="minimal">Minimal</option>
+                    <option value="creative">Creative</option>
+                    <option value="executive">Executive</option>
+                    <option value="compact">Compact</option>
+                    <option value="bold">Bold</option>
+                    <option value="tech">Tech</option>
+                </select>
+            </div>
+
+            <div class="section-title">Personal Details</div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="nameInput" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" id="titleInput" placeholder="Software Engineer">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phoneInput" placeholder="+1 234 567 890">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="locationInput" placeholder="New York, USA">
+            </div>
+
+            <div class="section-title" style="margin-top: 2rem;">Professional Summary</div>
+            <div class="form-group">
+                <textarea id="summaryInput" rows="4" placeholder="Brief professional summary..."></textarea>
+            </div>
+
+            <div class="section-title" style="margin-top: 2rem;">Experience</div>
+            <div class="section-title" style="margin-top: 2rem;">Experience</div>
+            <div id="experience-list">
+                <!-- Dynamic experience fields will be added here -->
+            </div>
+            <button id="addExperienceBtn" class="btn-secondary" style="width: 100%; margin-top: 10px;">+ Add
+                Experience</button>
+
+            <div class="section-title" style="margin-top: 2rem;">Skills</div>
+            <div class="form-group">
+                <textarea id="skillsInput" rows="3"
+                    placeholder="JavaScript, React, Node.js, Python, UI/UX Design"></textarea>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div id="resumePreview" class="resume-paper">
+                <div class="resume-preview-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
