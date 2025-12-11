@@ -12,36 +12,82 @@ const paper = document.getElementById('resumePreview');
 
 const urlParams = new URLSearchParams(window.location.search);
 let currentTheme = urlParams.get('theme') || 'modern';
-const themeSelect = document.getElementById('themeSelect');
+// Theme Selection Logic
+const themeCards = document.querySelectorAll('.mini-theme-card');
 
-if (themeSelect) {
-    themeSelect.value = currentTheme;
-    themeSelect.addEventListener('change', (e) => {
-        currentTheme = e.target.value;
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('theme', currentTheme);
-        window.history.pushState({}, '', newUrl);
+// Theme Selection with Smooth Transition
+window.selectTheme = function (themeName) {
+    const previewElement = document.getElementById('resumePreview');
+
+    // Start transition
+    previewElement.classList.add('changing');
+
+    // Wait for fade out
+    setTimeout(() => {
+        currentTheme = themeName;
+
+        // Update active state in sidebar
+        document.querySelectorAll('.mini-theme-card').forEach(card => {
+            card.classList.remove('active');
+            if (card.dataset.theme === themeName) {
+                card.classList.add('active');
+            }
+        });
+
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('theme', themeName);
+        window.history.pushState({}, '', url);
+
         updatePreview();
-    });
+
+        // Fade back in
+        setTimeout(() => {
+            previewElement.classList.remove('changing');
+        }, 50);
+    }, 300);
+};
+
+// Initialize Active Theme
+if (currentTheme) {
+    selectTheme(currentTheme);
+} else {
+    updatePreview();
+    // Set default active state
+    const defaultCard = document.querySelector('.mini-theme-card[data-theme="modern"]');
+    if (defaultCard) defaultCard.classList.add('active');
 }
 
 function addExperienceField() {
     const div = document.createElement('div');
     div.className = 'experience-entry';
     div.innerHTML = `
-        <div class="form-group">
-            <input type="text" class="exp-title" placeholder="Job Title (e.g. Senior Developer)">
+        <div class="experience-header">
+            <span class="experience-title">Position ${document.querySelectorAll('.experience-entry').length + 1}</span>
+            <button class="btn-remove" onclick="this.closest('.experience-entry').remove(); updatePreview()">Remove</button>
         </div>
         <div class="form-group">
-            <input type="text" class="exp-company" placeholder="Company Name">
+            <label>Job Title</label>
+            <input type="text" class="exp-title" placeholder="e.g. Senior Developer">
         </div>
         <div class="form-group">
-            <input type="text" class="exp-date" placeholder="Date (e.g. 2020 - Present)">
+            <label>Company</label>
+            <input type="text" class="exp-company" placeholder="e.g. Google">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="text" class="exp-date" placeholder="e.g. 2020">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="text" placeholder="Present">
+            </div>
         </div>
         <div class="form-group">
-            <textarea class="exp-desc" rows="3" placeholder="Job Description..."></textarea>
+            <label>Description</label>
+            <textarea class="exp-desc" rows="3" placeholder="Describe your responsibilities and achievements..."></textarea>
         </div>
-        <button class="btn-remove" onclick="this.parentElement.remove(); updatePreview()">Remove</button>
     `;
     experienceList.appendChild(div);
 
@@ -447,5 +493,24 @@ if (addExperienceBtn) {
 addExperienceField();
 
 function downloadPDF() {
-    window.print();
+    const element = document.getElementById('resumePreview');
+    const name = nameInput.value || 'Resume';
+    const filename = `${name.replace(/\s+/g, '_')}_Resume.pdf`;
+
+    const opt = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Temporarily remove shadow for clean PDF
+    const originalShadow = element.style.boxShadow;
+    element.style.boxShadow = 'none';
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        // Restore shadow
+        element.style.boxShadow = originalShadow;
+    });
 }
