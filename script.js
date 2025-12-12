@@ -7,6 +7,8 @@ const summaryInput = document.getElementById('summaryInput');
 const skillsInput = document.getElementById('skillsInput');
 const experienceList = document.getElementById('experience-list');
 const addExperienceBtn = document.getElementById('addExperienceBtn');
+const projectsList = document.getElementById('projects-list');
+const addProjectBtn = document.getElementById('addProjectBtn');
 const preview = document.querySelector('.resume-preview-content');
 const paper = document.getElementById('resumePreview');
 
@@ -96,6 +98,28 @@ function addExperienceField() {
         input.addEventListener('input', updatePreview);
     });
 }
+function addProjectField() {
+    const div = document.createElement('div');
+    div.className = 'project-entry';
+    div.innerHTML = `
+        <div class="experience-header">
+            <span class="experience-title">Project</span>
+            <button class="btn-remove" onclick="this.closest('.project-entry').remove(); updatePreview()">Remove</button>
+        </div>
+        <div class="form-group">
+            <label>Project Title</label>
+            <input type="text" class="proj-title" placeholder="e.g. Resume Builder">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea class="proj-desc" rows="3" placeholder="What the project does..."></textarea>
+        </div>
+    `;
+    projectsList.appendChild(div);
+
+    div.querySelectorAll('input, textarea').forEach(i => i.addEventListener('input', updatePreview));
+}
+
 
 function updatePreview() {
     const experienceEntries = [];
@@ -107,6 +131,17 @@ function updatePreview() {
             description: entry.querySelector('.exp-desc').value || 'Description of your role and achievements...'
         });
     });
+
+    const projectEntries = [];
+    document.querySelectorAll('.project-entry').forEach(e => {
+        projectEntries.push({
+            title: e.querySelector('.proj-title').value || 'Project Title',
+            description: e.querySelector('.proj-desc').value || 'Project description...'
+        });
+    });
+
+    // REST OF YOUR updatePreview CODE BELOW THIS
+
 
     // If no experience, add a placeholder
     if (experienceEntries.length === 0) {
@@ -126,7 +161,8 @@ function updatePreview() {
         location: locationInput.value || 'City, Country',
         summary: summaryInput.value || 'Professional summary goes here...',
         experience: experienceEntries,
-        skills: skillsInput.value || 'Skill 1, Skill 2, Skill 3'
+        skills: skillsInput.value || 'Skill 1, Skill 2, Skill 3' ,
+        projects: projectEntries
     };
 
     renderTheme(data);
@@ -254,6 +290,19 @@ function renderTheme(data) {
                     <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Experience</h3>
                     ${experienceHtml}
                 </div>
+                <div style="margin-bottom: 25px;">
+    <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Projects</h3>
+    ${data.projects.length > 0 
+        ? data.projects.map(p => `
+            <div style="margin-bottom: 15px;">
+                <strong>${p.title}</strong>
+                <p style="color:#374151; line-height:1.5;">${p.description}</p>
+            </div>
+        `).join('')
+        : `<p style="color:#6b7280;">No projects added yet.</p>`
+    }
+</div>
+
                 <div>
                     <h3 style="color: #1f2937; font-size: 16px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">Skills</h3>
                     <p style="color: #374151; line-height: 1.6;">${data.skills}</p>
@@ -488,6 +537,10 @@ function renderTheme(data) {
 if (addExperienceBtn) {
     addExperienceBtn.addEventListener('click', addExperienceField);
 }
+if (addProjectBtn) {
+    addProjectBtn.addEventListener('click', addProjectField);
+}
+
 
 // Add one initial experience field
 addExperienceField();
